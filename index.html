@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SERCONFI.sas – Asesoría Tributaria y Contabilidad | Latacunga, Ecuador</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        /* === VARIABLES === */
+        :root {
+            --blue-dark:  #0d2b6b;
+            --blue-mid:   #1565c0;
+            --blue-main:  #1e88e5;
+            --blue-light: #42a5f5;
+            --blue-pale:  #90caf9;
+            --blue-xpale: #e3f2fd;
+            --gray-dark:  #1a1a2e;
+            --gray-mid:   #4a4a6a;
+            --gray-light: #f5f7fa;
+            --white:      #ffffff;
+            --shadow:      0 10px 40px rgba(13,43,107,.14);
+            --shadow-lg:   0 20px 60px rgba(13,43,107,.24);
+            --trans:       all .4s cubic-bezier(.4,0,.2,1);
+            --grad:        linear-gradient(135deg, var(--blue-dark) 0%, var(--blue-mid) 55%, var(--blue-main) 100%);
+        }
+
+        *,*::before,*::after { margin:0; padding:0; box-sizing:border-box; }
+        html { scroll-behavior:smooth; }
+        body { font-family:'Open Sans',sans-serif; color:var(--gray-dark); overflow-x:hidden; background:var(--white); }
+
+        /* === SCROLL REVEAL === */
+        .reveal {
+            opacity:0;
+            transform:translateY(48px);
+            transition:opacity .8s ease, transform .8s ease;
+        }
+        .reveal.from-left  { transform:translateX(-60px); }
+        .reveal.from-right { transform:translateX(60px); }
+        .reveal.scale-in   { transform:scale(.85); }
+        .reveal.visible    { opacity:1; transform:none; }
+
+        .d1{transition-delay:.10s} .d2{transition-delay:.20s} .d3{transition-delay:.30s}
+        .d4{transition-delay:.40s} .d5{transition-delay:.50s} .d6{transition-delay:.60s}
+        .d7{transition-delay:.70s}
+
+        /* === NAVBAR === */
+        .navbar {
+            position:fixed; top:0; left:0; right:0; z-index:1000;
+            padding:1rem 5%;
+            display:flex; align-items:center; justify-content:space-between;
+            transition:var(--trans);
+        }
+        .navbar.scrolled {
+            background:rgba(10,28,72,.96);
+            backdrop-filter:blur(20px);
+            box-shadow:0 4px 30px rgba(0,0,0,.3);
+            padding:.65rem 5%;
+        }
+        .nav-logo {
+            display:flex; align-items:center; gap:.8rem; text-decoration:none;
+        }
+        .nav-logo img { height:52px; filter:drop-shadow(0 2px 8px rgba(0,0,0,.35)); }
+        .nav-logo-text { display:flex; flex-direction:column; }
+        .nav-logo-text .brand   { font-family:'Montserrat',sans-serif; font-weight:900; font-size:1.4rem; color:var(--white); letter-spacing:2px; }
+        .nav-logo-text .tagline { font-size:.6rem; color:var(--blue-pale); letter-spacing:1.5px; text-transform:uppercase; }
+
+        .nav-links { display:flex; gap:2rem; list-style:none; }
+        .nav-links a {
+            text-decoration:none; color:rgba(255,255,255,.82); font-size:.82rem;
+            font-weight:600; letter-spacing:1px; text-transform:uppercase;
+            transition:var(--trans); position:relative;
+        }
+        .nav-links a::after {
+            content:''; position:absolute; bottom:-3px; left:0; width:0; height:2px;
+            background:var(--blue-pale); transition:width .3s ease;
+        }
+        .nav-links a:hover { color:var(--white); }
+        .nav-links a:hover::after { width:100%; }
+
+        .nav-cta {
+            background:var(--blue-light) !important; color:var(--white) !important;
+            padding:.45rem 1.2rem; border-radius:25px; font-weight:700 !important;
+        }
+        .nav-cta:hover { background:var(--white) !important; color:var(--blue-dark) !important; transform:translateY(-2px); box-shadow:0 8px 20px rgba(0,0,0,.2); }
+        .nav-cta::after { display:none !important; }
+
+        /* === HERO === */
+        .hero {
+            min-height:100vh; background:var(--grad);
+            position:relative; display:flex; align-items:center; justify-content:center; overflow:hidden;
+        }
+        .hero-bg { position:absolute; inset:0; overflow:hidden; pointer-events:none; }
+        .blob {
+            position:absolute; border-radius:50%; opacity:.06;
+            animation:floatBlob 9s ease-in-out infinite;
+        }
+        .blob-1 { width:520px; height:520px; background:var(--white);  top:-160px; right:-120px; animation-delay:0s; }
+        .blob-2 { width:320px; height:320px; background:var(--blue-pale); bottom:-80px; left:-80px; animation-delay:2.5s; }
+        .blob-3 { width:200px; height:200px; background:var(--white);  top:62%; right:8%; animation-delay:4s; }
+        .blob-4 { width:140px; height:140px; background:var(--blue-pale); top:28%; left:4%; animation-delay:1.5s; }
+
+        @keyframes floatBlob {
+            0%,100% { transform:translateY(0) rotate(0deg); }
+            33%      { transform:translateY(-22px) rotate(6deg); }
+            66%      { transform:translateY(12px) rotate(-4deg); }
+        }
+
+        .hero-grid {
+            position:absolute; inset:0;
+            background-image:
+                linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
+            background-size:60px 60px;
+        }
+
+        .hero-content {
+            position:relative; z-index:1; text-align:center;
+            padding:2rem 5%; max-width:900px;
+        }
+
+        .hero-logo {
+            width:150px; height:auto; margin-bottom:1.8rem;
+            filter:drop-shadow(0 10px 30px rgba(0,0,0,.4));
+            animation:logoIn 1.2s cubic-bezier(.4,0,.2,1) forwards;
+        }
+        @keyframes logoIn {
+            from { opacity:0; transform:translateY(-30px) scale(.8); }
+            to   { opacity:1; transform:translateY(0) scale(1); }
+        }
+
+        /* Placeholder logo si no hay imagen */
+        .hero-logo-placeholder {
+            width:150px; height:150px; margin:0 auto 1.8rem;
+            background:rgba(255,255,255,.12);
+            border:3px solid rgba(255,255,255,.25);
+            border-radius:50%;
+            display:flex; align-items:center; justify-content:center;
+            animation:logoIn 1.2s cubic-bezier(.4,0,.2,1) forwards;
+        }
+        .hero-logo-placeholder span {
+            font-family:'Montserrat',sans-serif; font-weight:900;
+            font-size:1.8rem; color:var(--white); letter-spacing:2px;
+        }
+
+        .hero-badge {
+            display:inline-block;
+            background:rgba(255,255,255,.14); backdrop-filter:blur(10px);
+            border:1px solid rgba(255,255,255,.2);
+            color:var(--blue-pale); padding:.4rem 1.2rem; border-radius:20px;
+            font-size:.72rem; font-weight:700; letter-spacing:2px; text-transform:uppercase;
+            margin-bottom:1.4rem;
+            animation:fadeUp 1s .3s ease forwards; opacity:0;
+        }
+
+        .hero-title {
+            font-family:'Montserrat',sans-serif;
+            font-size:clamp(2.4rem,6vw,4.4rem); font-weight:900;
+            color:var(--white); line-height:1.1; margin-bottom:1.4rem;
+            animation:fadeUp 1s .5s ease forwards; opacity:0;
+        }
+        .hero-title span { color:var(--blue-pale); }
+
+        .hero-sub {
+            font-size:clamp(.95rem,2vw,1.2rem); color:rgba(255,255,255,.8);
+            max-width:620px; margin:0 auto 2.5rem; line-height:1.75; font-style:italic;
+            animation:fadeUp 1s .7s ease forwards; opacity:0;
+        }
+
+        .hero-btns {
+            display:flex; gap:1rem; justify-content:center; flex-wrap:wrap;
+            animation:fadeUp 1s .9s ease forwards; opacity:0;
+        }
+
+        .btn-primary {
+            display:inline-flex; align-items:center; gap:.5rem;
+            background:var(--white); color:var(--blue-dark);
+            padding:.95rem 2rem; border-radius:50px;
+            font-weight:700; font-size:.88rem; text-decoration:none;
+            transition:var(--trans); letter-spacing:.5px;
+            box-shadow:0 8px 30px rgba(0,0,0,.2);
+        }
+        .btn-primary:hover { transform:translateY(-4px); box-shadow:0 16px 40px rgba(0,0,0,.3); background:var(--blue-pale); }
+
+        .btn-ghost {
+            display:inline-flex; align-items:center; gap:.5rem;
+            background:transparent; color:var(--white);
+            padding:.95rem 2rem; border-radius:50px;
+            font-weight:700; font-size:.88rem; text-decoration:none;
+            transition:var(--trans); border:2px solid rgba(255,255,255,.5);
+        }
+        .btn-ghost:hover { border-color:var(--white); background:rgba(255,255,255,.1); transform:translateY(-4px); }
+
+        .scroll-hint {
+            position:absolute; bottom:2rem; left:50%; transform:translateX(-50%);
+            display:flex; flex-direction:column; align-items:center; gap:.4rem;
+            animation:bounce 2.2s ease-in-out infinite;
+        }
+        .scroll-hint span { color:rgba(255,255,255,.45); font-size:.65rem; letter-spacing:2px; text-transform:uppercase; }
+        .scroll-arrow {
+            width:22px; height:22px;
+            border-right:2px solid rgba(255,255,255,.4);
+            border-bottom:2px solid rgba(255,255,255,.4);
+            transform:rotate(45deg);
+        }
+
+        @keyframes fadeUp  { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:none} }
+        @keyframes bounce  { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(-10px)} }
+
+        /* === STATS === */
+        .stats {
+            background:var(--white);
+            display:grid; grid-template-columns:repeat(4,1fr);
+            padding:3.5rem 5%; gap:0;
+            box-shadow:0 4px 30px rgba(13,43,107,.1);
+            position:relative; z-index:2;
+        }
+        .stat-item {
+            text-align:center; padding:1.5rem;
+            border-right:1px solid #e8f0fe;
+        }
+        .stat-item:last-child { border-right:none; }
+        .stat-number {
+            font-family:'Montserrat',sans-serif; font-size:2.6rem;
+            font-weight:900; color:var(--blue-mid); display:block; line-height:1;
+        }
+        .stat-label {
+            font-size:.75rem; color:var(--gray-mid);
+            text-transform:uppercase; letter-spacing:1px; margin-top:.5rem; display:block;
+        }
+
+        /* === SECTIONS COMMON === */
+        section { padding:6rem 5%; }
+
+        .section-tag {
+            display:inline-block; background:var(--blue-xpale); color:var(--blue-mid);
+            padding:.35rem 1rem; border-radius:20px; font-size:.72rem;
+            font-weight:700; letter-spacing:2px; text-transform:uppercase; margin-bottom:.9rem;
+        }
+        .section-title {
+            font-family:'Montserrat',sans-serif; font-size:clamp(1.9rem,4vw,2.9rem);
+            font-weight:800; color:var(--blue-dark); line-height:1.2; margin-bottom:.8rem;
+        }
+        .section-title span { color:var(--blue-main); }
+        .section-sub { font-size:1rem; color:var(--gray-mid); max-width:580px; line-height:1.75; }
+
+        .sec-header { text-align:center; margin-bottom:4rem; }
+        .sec-header .section-sub { margin:0 auto; }
+
+        .divider { width:56px; height:4px; background:var(--grad); border-radius:2px; margin:1rem auto; }
+
+        /* === ABOUT === */
+        .about { background:var(--gray-light); }
+        .about-inner {
+            display:grid; grid-template-columns:1fr 1fr; gap:5rem;
+            align-items:center; max-width:1200px; margin:0 auto;
+        }
+        .about-card {
+            background:var(--white); border-radius:24px; padding:2.8rem;
+            box-shadow:var(--shadow); position:relative; overflow:hidden;
+        }
+        .about-card::before {
+            content:''; position:absolute; top:0; left:0; right:0;
+            height:5px; background:var(--grad);
+        }
+        .icon-grid { display:grid; grid-template-columns:1fr 1fr; gap:1.4rem; }
+        .icon-cell {
+            display:flex; flex-direction:column; align-items:center; gap:.5rem;
+            padding:1.4rem 1rem; background:var(--blue-xpale); border-radius:16px;
+            transition:var(--trans); cursor:default;
+        }
+        .icon-cell:hover { background:var(--blue-pale); transform:translateY(-4px); }
+        .icon-cell i { font-size:2rem; color:var(--blue-mid); }
+        .icon-cell span { font-size:.72rem; font-weight:700; color:var(--blue-dark); text-align:center; text-transform:uppercase; letter-spacing:.5px; }
+
+        .about-text h3 { font-family:'Montserrat',sans-serif; font-size:1.75rem; font-weight:800; color:var(--blue-dark); margin-bottom:1.4rem; }
+        .about-text p  { color:var(--gray-mid); line-height:1.8; margin-bottom:1.4rem; }
+
+        .feat-list { list-style:none; display:flex; flex-direction:column; gap:.75rem; }
+        .feat-list li { display:flex; align-items:flex-start; gap:.75rem; font-size:.92rem; color:var(--gray-dark); line-height:1.5; }
+        .feat-list li i { color:var(--blue-main); font-size:1.05rem; flex-shrink:0; margin-top:.1rem; }
+
+        /* === SERVICES === */
+        .services { background:var(--white); }
+        .services-grid {
+            display:grid; grid-template-columns:repeat(3,1fr);
+            gap:1.8rem; max-width:1200px; margin:0 auto;
+        }
+        /* 7º centrado */
+        .services-grid .scard:nth-child(7) { grid-column:2; }
+
+        .scard {
+            background:var(--white); border-radius:20px; padding:2.3rem 1.9rem;
+            box-shadow:0 4px 20px rgba(13,43,107,.07);
+            border:1px solid #e8f0fe; transition:var(--trans);
+            position:relative; overflow:hidden; cursor:default;
+        }
+        .scard::before {
+            content:''; position:absolute; top:0; left:0; right:0;
+            height:0; background:var(--grad); transition:height .4s ease;
+        }
+        .scard:hover { transform:translateY(-10px); box-shadow:var(--shadow-lg); border-color:transparent; }
+        .scard:hover::before { height:4px; }
+        .scard:hover .sicon { background:var(--grad); }
+        .scard:hover .sicon i { color:var(--white); }
+
+        .sicon {
+            width:68px; height:68px; border-radius:18px; background:var(--blue-xpale);
+            display:flex; align-items:center; justify-content:center;
+            margin-bottom:1.4rem; transition:var(--trans);
+        }
+        .sicon i { font-size:1.75rem; color:var(--blue-mid); transition:color .4s ease; }
+
+        .scard h3 { font-family:'Montserrat',sans-serif; font-size:1.05rem; font-weight:700; color:var(--blue-dark); margin-bottom:.9rem; }
+        .scard ul  { list-style:none; display:flex; flex-direction:column; gap:.45rem; }
+        .scard ul li { font-size:.83rem; color:var(--gray-mid); line-height:1.5; padding-left:1.1rem; position:relative; }
+        .scard ul li::before { content:'▸'; position:absolute; left:0; color:var(--blue-light); font-size:.68rem; top:2px; }
+
+        /* === WHY US === */
+        .why { background:var(--grad); position:relative; overflow:hidden; }
+        .why::before {
+            content:''; position:absolute; inset:0;
+            background-image:
+                linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
+            background-size:50px 50px;
+        }
+        .why .section-title { color:var(--white); }
+        .why .section-sub   { color:rgba(255,255,255,.7); }
+        .why .sec-header    { position:relative; z-index:1; }
+
+        .why-grid {
+            display:grid; grid-template-columns:repeat(4,1fr);
+            gap:1.8rem; max-width:1200px; margin:0 auto; position:relative; z-index:1;
+        }
+        .wcard {
+            background:rgba(255,255,255,.08); backdrop-filter:blur(10px);
+            border:1px solid rgba(255,255,255,.15); border-radius:20px;
+            padding:2rem 1.4rem; text-align:center; transition:var(--trans);
+        }
+        .wcard:hover { background:rgba(255,255,255,.15); transform:translateY(-8px); }
+        .wcard i  { font-size:2.4rem; color:var(--blue-pale); margin-bottom:.9rem; display:block; }
+        .wcard h4 { font-family:'Montserrat',sans-serif; font-size:.95rem; font-weight:700; color:var(--white); margin-bottom:.7rem; }
+        .wcard p  { font-size:.83rem; color:rgba(255,255,255,.7); line-height:1.6; }
+
+        /* === CONTACT === */
+        .contact { background:var(--gray-light); }
+        .contact-inner { display:grid; grid-template-columns:1fr 1.2fr; gap:4rem; max-width:1100px; margin:0 auto; align-items:start; }
+
+        .cinfo h3 { font-family:'Montserrat',sans-serif; font-size:1.75rem; font-weight:800; color:var(--blue-dark); margin-bottom:1.2rem; }
+        .cinfo p  { color:var(--gray-mid); line-height:1.8; margin-bottom:2rem; }
+
+        .clist { display:flex; flex-direction:column; gap:1rem; }
+        .citem {
+            display:flex; align-items:center; gap:1rem;
+            padding:1.1rem 1.2rem; background:var(--white); border-radius:12px;
+            box-shadow:0 2px 15px rgba(13,43,107,.06); transition:var(--trans);
+            text-decoration:none; color:inherit;
+        }
+        .citem:hover { transform:translateX(8px); box-shadow:var(--shadow); }
+        .citem-icon {
+            width:46px; height:46px; border-radius:12px; background:var(--grad);
+            display:flex; align-items:center; justify-content:center; flex-shrink:0;
+        }
+        .citem-icon.green { background:#25d366; }
+        .citem-icon i { color:var(--white); font-size:1.15rem; }
+        .citem-text span   { display:block; font-size:.68rem; color:var(--gray-mid); text-transform:uppercase; letter-spacing:1px; font-weight:600; }
+        .citem-text strong { display:block; font-size:.92rem; color:var(--blue-dark); font-weight:700; }
+
+        /* form */
+        .cform { background:var(--white); border-radius:24px; padding:2.8rem; box-shadow:var(--shadow); }
+        .cform h3 { font-family:'Montserrat',sans-serif; font-size:1.4rem; font-weight:800; color:var(--blue-dark); margin-bottom:.4rem; }
+        .cform > p { color:var(--gray-mid); font-size:.88rem; margin-bottom:1.8rem; }
+
+        .fg { margin-bottom:1.3rem; }
+        .fg label { display:block; font-size:.72rem; font-weight:700; color:var(--blue-dark); text-transform:uppercase; letter-spacing:1px; margin-bottom:.4rem; }
+        .fg input,.fg textarea,.fg select {
+            width:100%; padding:.85rem 1.1rem;
+            border:2px solid #e8f0fe; border-radius:10px;
+            font-family:'Open Sans',sans-serif; font-size:.92rem; color:var(--gray-dark);
+            transition:var(--trans); outline:none; background:var(--gray-light);
+        }
+        .fg input:focus,.fg textarea:focus,.fg select:focus {
+            border-color:var(--blue-light); background:var(--white);
+            box-shadow:0 0 0 4px rgba(66,165,245,.1);
+        }
+        .fg textarea { height:115px; resize:vertical; }
+        .fg select { cursor:pointer; }
+
+        .form-row { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+
+        .btn-send {
+            width:100%; padding:1rem;
+            background:var(--grad); color:var(--white);
+            border:none; border-radius:10px;
+            font-family:'Montserrat',sans-serif; font-size:.95rem; font-weight:700;
+            cursor:pointer; transition:var(--trans); letter-spacing:1px;
+            display:flex; align-items:center; justify-content:center; gap:.5rem;
+        }
+        .btn-send:hover { transform:translateY(-3px); box-shadow:0 10px 30px rgba(13,43,107,.3); }
+
+        /* === FOOTER === */
+        .footer { background:var(--blue-dark); color:rgba(255,255,255,.6); padding:3.5rem 5% 2rem; }
+        .footer-inner {
+            display:grid; grid-template-columns:2fr 1fr 1fr; gap:3rem;
+            max-width:1200px; margin:0 auto 3rem;
+        }
+        .fbrand img { height:56px; margin-bottom:1rem; filter:brightness(0) invert(1); opacity:.85; }
+        .fbrand p  { font-size:.83rem; line-height:1.75; max-width:270px; }
+
+        .fcol h4 { font-family:'Montserrat',sans-serif; font-size:.8rem; font-weight:700; color:var(--white); text-transform:uppercase; letter-spacing:1.5px; margin-bottom:1.1rem; }
+        .fcol ul { list-style:none; display:flex; flex-direction:column; gap:.65rem; }
+        .fcol ul li a { text-decoration:none; color:rgba(255,255,255,.55); font-size:.83rem; transition:color .3s ease; }
+        .fcol ul li a:hover { color:var(--blue-pale); }
+
+        .footer-bottom {
+            border-top:1px solid rgba(255,255,255,.1); padding-top:2rem;
+            display:flex; justify-content:space-between; align-items:center;
+            max-width:1200px; margin:0 auto; font-size:.78rem;
+        }
+        .footer-bottom span { color:var(--blue-pale); font-weight:600; }
+
+        /* === WHATSAPP FLOAT === */
+        .wa-float {
+            position:fixed; bottom:2rem; right:2rem;
+            width:60px; height:60px; border-radius:50%;
+            background:#25d366; display:flex; align-items:center; justify-content:center;
+            box-shadow:0 8px 25px rgba(37,211,102,.4);
+            z-index:999; text-decoration:none; transition:var(--trans);
+            animation:waPulse 2.5s ease-in-out infinite;
+        }
+        .wa-float:hover { transform:scale(1.12); box-shadow:0 12px 35px rgba(37,211,102,.65); }
+        .wa-float i { font-size:1.8rem; color:var(--white); }
+        @keyframes waPulse {
+            0%,100% { box-shadow:0 8px 25px rgba(37,211,102,.4); }
+            50%      { box-shadow:0 8px 40px rgba(37,211,102,.7); }
+        }
+
+        /* === RESPONSIVE === */
+        @media(max-width:1024px) {
+            .stats { grid-template-columns:repeat(2,1fr); }
+            .stat-item:nth-child(2) { border-right:none; }
+            .stat-item:nth-child(1),.stat-item:nth-child(2) { border-bottom:1px solid #e8f0fe; }
+            .services-grid { grid-template-columns:repeat(2,1fr); }
+            .services-grid .scard:nth-child(7) { grid-column:auto; }
+            .why-grid { grid-template-columns:repeat(2,1fr); }
+            .about-inner { grid-template-columns:1fr; }
+            .footer-inner { grid-template-columns:1fr 1fr; }
+        }
+        @media(max-width:768px) {
+            .nav-links { display:none; }
+            .stats { grid-template-columns:repeat(2,1fr); padding:2.5rem 4%; }
+            .services-grid { grid-template-columns:1fr; }
+            .contact-inner { grid-template-columns:1fr; }
+            .form-row { grid-template-columns:1fr; }
+            .footer-inner { grid-template-columns:1fr; }
+            .footer-bottom { flex-direction:column; gap:.5rem; text-align:center; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ====== NAVBAR ====== -->
+<nav class="navbar" id="navbar">
+    <a href="#inicio" class="nav-logo">
+        <img src="assets/logo.png" alt="SERCONFI" id="navLogoImg">
+        <div class="nav-logo-text">
+            <span class="brand">SERCONFI</span>
+            <span class="tagline">Asesoría Tributaria</span>
+        </div>
+    </a>
+    <ul class="nav-links">
+        <li><a href="#inicio">Inicio</a></li>
+        <li><a href="#nosotros">Nosotros</a></li>
+        <li><a href="#servicios">Servicios</a></li>
+        <li><a href="#contacto" class="nav-cta">Contáctanos</a></li>
+    </ul>
+</nav>
+
+<!-- ====== HERO ====== -->
+<section class="hero" id="inicio">
+    <div class="hero-bg">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+        <div class="blob blob-4"></div>
+    </div>
+    <div class="hero-grid"></div>
+
+    <div class="hero-content">
+        <!-- Logo: se muestra imagen si existe, sino placeholder de texto -->
+        <img src="assets/logo.png" alt="SERCONFI" class="hero-logo" id="heroLogoImg">
+        <div class="hero-logo-placeholder" id="heroLogoPlaceholder" style="display:none">
+            <span>SERCONFI</span>
+        </div>
+
+        <div class="hero-badge">Latacunga · Ecuador</div>
+        <h1 class="hero-title">
+            Expertos en <span>Tributación</span><br>y Contabilidad
+        </h1>
+        <p class="hero-sub">
+            "Tu aliado confiable en contabilidad, auditoría y asesoría tributaria"
+        </p>
+        <div class="hero-btns">
+            <a href="#servicios" class="btn-primary">
+                <i class="fas fa-briefcase"></i> Ver Servicios
+            </a>
+            <a href="#contacto" class="btn-ghost">
+                <i class="fas fa-phone"></i> Hablar con un experto
+            </a>
+        </div>
+    </div>
+
+    <div class="scroll-hint">
+        <span>Scroll</span>
+        <div class="scroll-arrow"></div>
+    </div>
+</section>
+
+<!-- ====== STATS ====== -->
+<div class="stats">
+    <div class="stat-item reveal scale-in d1">
+        <span class="stat-number" data-target="7">0</span>
+        <span class="stat-label">Áreas de servicio</span>
+    </div>
+    <div class="stat-item reveal scale-in d2">
+        <span class="stat-number" data-target="100">0</span>
+        <span class="stat-label">% Compromiso</span>
+    </div>
+    <div class="stat-item reveal scale-in d3">
+        <span class="stat-number">SRI</span>
+        <span class="stat-label">Cumplimiento tributario</span>
+    </div>
+    <div class="stat-item reveal scale-in d4">
+        <span class="stat-number">360°</span>
+        <span class="stat-label">Asesoría integral</span>
+    </div>
+</div>
+
+<!-- ====== ABOUT ====== -->
+<section class="about" id="nosotros">
+    <div class="about-inner">
+        <div class="reveal from-left">
+            <div class="about-card">
+                <div class="icon-grid">
+                    <div class="icon-cell"><i class="fas fa-balance-scale"></i><span>Cumplimiento Legal</span></div>
+                    <div class="icon-cell"><i class="fas fa-shield-alt"></i><span>Seguridad Tributaria</span></div>
+                    <div class="icon-cell"><i class="fas fa-chart-line"></i><span>Planificación</span></div>
+                    <div class="icon-cell"><i class="fas fa-handshake"></i><span>Confianza</span></div>
+                </div>
+            </div>
+        </div>
+        <div class="about-text reveal from-right">
+            <div class="section-tag">Quiénes somos</div>
+            <h3>SERCONFI: Tu socio estratégico financiero</h3>
+            <p>
+                Somos una firma especializada en asesoría tributaria y servicios contables para empresas en Ecuador. Ubicados en Latacunga, ofrecemos soluciones integrales que permiten a tu empresa operar con total tranquilidad frente al SRI y la Superintendencia de Compañías.
+            </p>
+            <p>
+                Nuestro equipo combina conocimiento técnico actualizado con un enfoque personalizado, asegurando que cada cliente reciba atención dedicada a sus necesidades específicas.
+            </p>
+            <ul class="feat-list">
+                <li><i class="fas fa-check-circle"></i> Especialistas en normativa tributaria ecuatoriana</li>
+                <li><i class="fas fa-check-circle"></i> Implementación de NIIF para empresas</li>
+                <li><i class="fas fa-check-circle"></i> Atención personalizada y oportuna</li>
+                <li><i class="fas fa-check-circle"></i> Cumplimiento con SRI y Superintendencia de Compañías</li>
+                <li><i class="fas fa-check-circle"></i> Asesoría en prevención de lavado de activos</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!-- ====== SERVICES ====== -->
+<section class="services" id="servicios">
+    <div class="sec-header">
+        <div class="reveal">
+            <div class="section-tag">Nuestros Servicios</div>
+            <h2 class="section-title">Soluciones <span>integrales</span> para tu empresa</h2>
+            <div class="divider"></div>
+            <p class="section-sub">Cubrimos todas las áreas de gestión tributaria y contable que tu empresa necesita para operar con seguridad y eficiencia.</p>
+        </div>
+    </div>
+
+    <div class="services-grid">
+
+        <!-- 1 -->
+        <div class="scard reveal d1">
+            <div class="sicon"><i class="fas fa-file-invoice-dollar"></i></div>
+            <h3>Outsourcing Contable</h3>
+            <ul>
+                <li>Implementación de las Normas Internacionales de Información Financiera (NIIF).</li>
+                <li>Cumplimiento de las obligaciones tributarias ante el Servicio de Rentas Internas (SRI).</li>
+            </ul>
+        </div>
+
+        <!-- 2 -->
+        <div class="scard reveal d2">
+            <div class="sicon"><i class="fas fa-shield-alt"></i></div>
+            <h3>Seguridad Informática</h3>
+            <ul>
+                <li>Evaluación, diseño e implementación de soluciones de seguridad informática.</li>
+                <li>Consultoría especializada en ciberseguridad.</li>
+                <li>Gestión y análisis de vulnerabilidades.</li>
+            </ul>
+        </div>
+
+        <!-- 3 -->
+        <div class="scard reveal d3">
+            <div class="sicon"><i class="fas fa-search-dollar"></i></div>
+            <h3>Revisiones Tributarias</h3>
+            <ul>
+                <li>Diagnóstico integral de la situación tributaria de la empresa.</li>
+                <li>Revisión mensual de declaraciones de IVA, retenciones y anexos.</li>
+                <li>Verificación anual del correcto llenado del Formulario 101.</li>
+                <li>Elaboración de los anexos del Informe de Cumplimiento Tributario.</li>
+            </ul>
+        </div>
+
+        <!-- 4 -->
+        <div class="scard reveal d4">
+            <div class="sicon"><i class="fas fa-chalkboard-teacher"></i></div>
+            <h3>Capacitación Personalizada</h3>
+            <ul>
+                <li>Impuesto a la Renta.</li>
+                <li>Retenciones en la fuente de IVA e Impuesto a la Renta.</li>
+                <li>Precios de Transferencia.</li>
+                <li>Dividendos a accionistas.</li>
+                <li>Llenado correcto de formularios y anexos.</li>
+            </ul>
+        </div>
+
+        <!-- 5 -->
+        <div class="scard reveal d5">
+            <div class="sicon"><i class="fas fa-chart-bar"></i></div>
+            <h3>Planificación Tributaria</h3>
+            <ul>
+                <li>Revisión del presupuesto anual.</li>
+                <li>Evaluación de beneficios e incentivos tributarios conforme a la normativa vigente.</li>
+                <li>Determinación de la conciliación tributaria.</li>
+                <li>Cálculo del impuesto a la renta causado.</li>
+            </ul>
+        </div>
+
+        <!-- 6 -->
+        <div class="scard reveal d6">
+            <div class="sicon"><i class="fas fa-gavel"></i></div>
+            <h3>Reclamo Tributario</h3>
+            <ul>
+                <li>Gestión de pagos en exceso o indebidos del Impuesto a la Renta.</li>
+                <li>Tramitación de devoluciones de IVA e ISD.</li>
+                <li>Impugnación de comunicaciones de diferencias ante el SRI.</li>
+                <li>Asesoría en procesos de determinación tributaria.</li>
+            </ul>
+        </div>
+
+        <!-- 7 -->
+        <div class="scard reveal d7">
+            <div class="sicon"><i class="fas fa-cogs"></i></div>
+            <h3>Otros Servicios</h3>
+            <ul>
+                <li>Asesoría para la correcta aplicación de beneficios tributarios.</li>
+                <li>Elaboración de Informes de Comisario para la Superintendencia de Compañías.</li>
+                <li>Acompañamiento para atender requerimientos contables de la Superintendencia de Compañías.</li>
+                <li>Asesoría para el cumplimiento de normas de prevención de lavado de activos.</li>
+            </ul>
+        </div>
+
+    </div>
+</section>
+
+<!-- ====== WHY US ====== -->
+<section class="why">
+    <div class="sec-header">
+        <div class="reveal">
+            <div class="section-tag" style="background:rgba(255,255,255,.15);color:#fff">Por qué elegirnos</div>
+            <h2 class="section-title">Tu empresa merece los <span style="color:var(--blue-pale)">mejores aliados</span></h2>
+            <div class="divider"></div>
+            <p class="section-sub">Nos diferenciamos por nuestro compromiso, expertise y enfoque personalizado en cada cliente.</p>
+        </div>
+    </div>
+    <div class="why-grid">
+        <div class="wcard reveal d1">
+            <i class="fas fa-user-tie"></i>
+            <h4>Expertos Certificados</h4>
+            <p>Profesionales con amplia experiencia en tributación ecuatoriana y normativa del SRI.</p>
+        </div>
+        <div class="wcard reveal d2">
+            <i class="fas fa-clock"></i>
+            <h4>Atención Oportuna</h4>
+            <p>Respondemos a tiempo para que nunca pierdas un plazo tributario importante.</p>
+        </div>
+        <div class="wcard reveal d3">
+            <i class="fas fa-lock"></i>
+            <h4>Confidencialidad Total</h4>
+            <p>Tu información financiera está protegida con los más altos estándares de seguridad.</p>
+        </div>
+        <div class="wcard reveal d4">
+            <i class="fas fa-headset"></i>
+            <h4>Soporte Continuo</h4>
+            <p>Estamos disponibles para resolver tus dudas y acompañarte en cada proceso.</p>
+        </div>
+    </div>
+</section>
+
+<!-- ====== CONTACT ====== -->
+<section class="contact" id="contacto">
+    <div class="sec-header">
+        <div class="reveal">
+            <div class="section-tag">Contáctanos</div>
+            <h2 class="section-title">Hablemos de tu <span>empresa</span></h2>
+            <div class="divider"></div>
+            <p class="section-sub">Estamos en Latacunga, Ecuador, listos para asesorarte. Escríbenos o llámanos.</p>
+        </div>
+    </div>
+    <div class="contact-inner">
+
+        <div class="cinfo reveal from-left">
+            <h3>Información de contacto</h3>
+            <p>Contáctanos por cualquiera de estos medios y un especialista te atenderá a la brevedad posible.</p>
+            <div class="clist">
+                <a href="tel:0999922245" class="citem">
+                    <div class="citem-icon"><i class="fas fa-phone"></i></div>
+                    <div class="citem-text"><span>Teléfono 1</span><strong>0999 922 245</strong></div>
+                </a>
+                <a href="tel:0984580820" class="citem">
+                    <div class="citem-icon"><i class="fas fa-phone-alt"></i></div>
+                    <div class="citem-text"><span>Teléfono 2</span><strong>0984 580 820</strong></div>
+                </a>
+                <a href="mailto:averdesoto79@gmail.com" class="citem">
+                    <div class="citem-icon"><i class="fas fa-envelope"></i></div>
+                    <div class="citem-text"><span>Correo electrónico</span><strong>averdesoto79@gmail.com</strong></div>
+                </a>
+                <a href="https://wa.me/593999922245" target="_blank" class="citem">
+                    <div class="citem-icon green"><i class="fab fa-whatsapp"></i></div>
+                    <div class="citem-text"><span>WhatsApp</span><strong>0999 922 245</strong></div>
+                </a>
+                <div class="citem">
+                    <div class="citem-icon"><i class="fas fa-map-marker-alt"></i></div>
+                    <div class="citem-text"><span>Ubicación</span><strong>Latacunga, Ecuador</strong></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="reveal from-right">
+            <div class="cform">
+                <h3>Envíanos un mensaje</h3>
+                <p>Cuéntanos sobre tu empresa y te contactaremos en breve.</p>
+                <form onsubmit="handleSubmit(event)">
+                    <div class="form-row">
+                        <div class="fg">
+                            <label>Nombre</label>
+                            <input type="text" placeholder="Tu nombre" required>
+                        </div>
+                        <div class="fg">
+                            <label>Empresa</label>
+                            <input type="text" placeholder="Nombre de tu empresa">
+                        </div>
+                    </div>
+                    <div class="fg">
+                        <label>Correo electrónico</label>
+                        <input type="email" placeholder="tu@correo.com" required>
+                    </div>
+                    <div class="fg">
+                        <label>Servicio de interés</label>
+                        <select>
+                            <option value="">Selecciona un servicio...</option>
+                            <option>Outsourcing Contable</option>
+                            <option>Seguridad Informática</option>
+                            <option>Revisiones Tributarias</option>
+                            <option>Capacitación Personalizada</option>
+                            <option>Planificación Tributaria</option>
+                            <option>Reclamo Tributario</option>
+                            <option>Otros Servicios</option>
+                        </select>
+                    </div>
+                    <div class="fg">
+                        <label>Mensaje</label>
+                        <textarea placeholder="Cuéntanos brevemente sobre tu empresa y lo que necesitas..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn-send">
+                        <i class="fas fa-paper-plane"></i> Enviar Mensaje
+                    </button>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- ====== FOOTER ====== -->
+<footer class="footer">
+    <div class="footer-inner">
+        <div class="fbrand">
+            <img src="assets/logo.png" alt="SERCONFI" onerror="this.style.display='none'">
+            <p>"Tu aliado confiable en contabilidad, auditoría y asesoría tributaria" — Latacunga, Ecuador.</p>
+        </div>
+        <div class="fcol">
+            <h4>Servicios</h4>
+            <ul>
+                <li><a href="#servicios">Outsourcing Contable</a></li>
+                <li><a href="#servicios">Seguridad Informática</a></li>
+                <li><a href="#servicios">Revisiones Tributarias</a></li>
+                <li><a href="#servicios">Capacitación</a></li>
+                <li><a href="#servicios">Planificación Tributaria</a></li>
+                <li><a href="#servicios">Reclamo Tributario</a></li>
+            </ul>
+        </div>
+        <div class="fcol">
+            <h4>Contacto</h4>
+            <ul>
+                <li><a href="tel:0999922245">0999 922 245</a></li>
+                <li><a href="tel:0984580820">0984 580 820</a></li>
+                <li><a href="mailto:averdesoto79@gmail.com">averdesoto79@gmail.com</a></li>
+                <li><a href="#">Latacunga, Ecuador</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>© 2025 <span>SERCONFI.sas</span> — Todos los derechos reservados.</p>
+        <p>Latacunga, Ecuador</p>
+    </div>
+</footer>
+
+<!-- WhatsApp flotante -->
+<a href="https://wa.me/593999922245" target="_blank" class="wa-float" title="Escríbenos por WhatsApp">
+    <i class="fab fa-whatsapp"></i>
+</a>
+
+<script>
+    // --- Navbar scroll ---
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+        navbar.classList.toggle('scrolled', window.scrollY > 80);
+    });
+
+    // --- Logo fallback ---
+    const heroImg = document.getElementById('heroLogoImg');
+    const heroPlaceholder = document.getElementById('heroLogoPlaceholder');
+    if (heroImg) {
+        heroImg.addEventListener('error', () => {
+            heroImg.style.display = 'none';
+            heroPlaceholder.style.display = 'flex';
+        });
+    }
+    const navImg = document.getElementById('navLogoImg');
+    if (navImg) navImg.addEventListener('error', () => navImg.style.display = 'none');
+
+    // --- Scroll reveal ---
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    // --- Counters ---
+    const counterObs = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+            if (!e.isIntersecting) return;
+            const el = e.target;
+            const target = parseInt(el.dataset.target);
+            const suffix = target === 100 ? '%' : '+';
+            let cur = 0;
+            const step = target / (2000 / 16);
+            const timer = setInterval(() => {
+                cur += step;
+                if (cur >= target) {
+                    el.textContent = target + suffix;
+                    clearInterval(timer);
+                } else {
+                    el.textContent = Math.floor(cur) + suffix;
+                }
+            }, 16);
+            counterObs.unobserve(el);
+        });
+    }, { threshold: 0.5 });
+
+    document.querySelectorAll('.stat-number[data-target]').forEach(el => counterObs.observe(el));
+
+    // --- Form ---
+    function handleSubmit(e) {
+        e.preventDefault();
+        const btn = e.target.querySelector('.btn-send');
+        btn.innerHTML = '<i class="fas fa-check"></i> ¡Mensaje enviado!';
+        btn.style.background = 'linear-gradient(135deg,#1b5e20,#2e7d32)';
+        btn.disabled = true;
+        setTimeout(() => {
+            btn.innerHTML = '<i class="fas fa-paper-plane"></i> Enviar Mensaje';
+            btn.style.background = '';
+            btn.disabled = false;
+            e.target.reset();
+        }, 3500);
+    }
+
+    // --- Smooth scroll ---
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+        a.addEventListener('click', e => {
+            e.preventDefault();
+            const t = document.querySelector(a.getAttribute('href'));
+            if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+    });
+</script>
+</body>
+</html>
